@@ -2,7 +2,6 @@
 
 from cmselemental.models import InputProc, OutputProc
 from mmelemental.models import Molecule
-from mmelemental.models.collect import Ensemble
 from pydantic import Field
 from typing import Union, Optional, Dict, Any
 
@@ -10,42 +9,28 @@ __all__ = ["InputCoarse", "OutputCoarse"]
 
 
 class InputCoarse(InputProc):
-	"""An input model for mmic_cg."""
+	"""An input model for coarse-graining."""
 
-	molecule: Optional[Dict[str, Molecule]] = Field(
-		None,
-		description="The selected molecules used for coarse-graining"
-		)
-
-	ensemble: Optional[Dict[str, Ensemble]] = Field(
-		None,
-		description="The selected molecules used for coarse-graining"
-		)
-
+	molecule: Union[Molecule, List[Molecule]] = Field(
+		...,
+		description="A single or list of molecule objects to coarse-grain."
+	)
 	method: str = Field(
 		...,
-		description="The name of the cg method. Example: 'spacewarping'"
-		)
-
+		description="The name of the coarse-graining method."
+	)
 	method_keywords: Optional[Dict[str, Any]] = Field(
 		None,
-		description="The args used to specifi details in different cg method."
-		)
+		description="Additional keyword arguments used for the cg method."
+	)
 
 class OutputCoarse(OutputProc):
-	"""An output model for mmic_cg."""
+	"""An output model for coarse-graining."""
 
 	proc_input: InputCoarse = Field(
 		...,
-		description="Input schema used to compute cg variables"
-		)
-
-	molecule: Optional[Dict[str, Molecule]] = Field(
-		None, description="Coarse-grained output molecule."
+		description=InputCoarse.__doc__,
 	)
-
-	ensemble: Optional[Dict[str, Ensemble]] = Field(
-		None,
-		description="Ensemble output for a series of microstates of molecules. "
-		"See the :class:``Ensemble`` class.",
+	molecule: Union[Molecule, List[Molecule]] = Field(
+		None, description="A single or list of coarse-grained molecule objects."
 	)
