@@ -9,8 +9,7 @@ import sys
 import json
 
 
-mol_file = mm_data.mols["water-mol.json"]
-#ff_file = mm_data.ffs["water-ff.json"]
+molfiles = [filep for filen, filep in mm_data.mols.items() if filep.endswith(".json")]
 
 
 def test_mmic_cg_imported():
@@ -18,15 +17,16 @@ def test_mmic_cg_imported():
     assert "mmic_cg" in sys.modules
 
 
-def test_mmic_cg_models():
-    with open(mol_file, "r") as fp:
+@pytest.mark.parametrize("molfile", molfiles)
+def test_mmic_cg_models(molfile):
+    with open(molfile, "r") as fp:
         mol = json.load(fp)
 
     inputs = mmic_cg.InputCoarse(
-        molecule={"mol": mol},
+        molecule=mol,
         schema_name="test",
         schema_version=1.0,
-        method="spacewarping",
+        method="some_method",
     )
 
     class CoarseDummyComponent(TacticComponent):
@@ -51,6 +51,12 @@ def test_mmic_cg_models():
             inputs: mmic_cg.InputCoarse,
         ) -> Tuple[bool, mmic_cg.OutputCoarse]:
 
-            return True, mmic_cg.OutputCoarse(proc_input=inputs, molecule=inputs.molecule, schema_name=inputs.schema_name, schema_version=inputs.schema_version, success=True)
+            return True, mmic_cg.OutputCoarse(
+                proc_input=inputs,
+                molecule=inputs.molecule,
+                schema_name=inputs.schema_name,
+                schema_version=inputs.schema_version,
+                success=True,
+            )
 
     outputs = CoarseDummyComponent.compute(inputs)
