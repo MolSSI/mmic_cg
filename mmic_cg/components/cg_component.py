@@ -6,7 +6,7 @@ from typing import List, Tuple, Optional, Set
 from cmselemental.util.decorators import classproperty
 from mmic.components.blueprints import StrategyComponent
 
-#from mmic.components.blueprints import StrategyComponent
+# from mmic.components.blueprints import StrategyComponent
 from ..models import InputCoarse, OutputCoarse
 
 __all__ = ["CoarseComponent"]
